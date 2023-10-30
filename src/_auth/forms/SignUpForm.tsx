@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/shared/Loader";
+import { useToast } from "@/components/ui/use-toast";
 import { createUserAccount } from "@/lib/appwrite/api";
 import { signUpFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,7 @@ import { Link } from "react-router-dom";
 import * as z from "zod";
 
 export default function SignUpForm() {
+  const { toast } = useToast();
   const isLoading = false;
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -23,9 +25,16 @@ export default function SignUpForm() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    const newUser = await createUserAccount(values);
-    console.log(newUser, "new user");
+    const newAccount = await createUserAccount(values);
+    if (!newAccount) {
+      return toast({
+        title: "Sign up failed. Please try again.",
+      });
+    }
+
+    console.log(newAccount, "new user");
   }
+
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
