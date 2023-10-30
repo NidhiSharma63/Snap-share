@@ -23,9 +23,6 @@ export default function SignUpForm() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
     const newUser = await createUserAccount(values);
     console.log(newUser, "new user");
   }
@@ -38,7 +35,7 @@ export default function SignUpForm() {
           To use snapshare, Please enter you account details
         </p>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-fill mt-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-fill mt-4 ">
           <FormField
             control={form.control}
             name="name"
@@ -46,7 +43,7 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Name" {...field} />
+                  <Input className="shad-input" placeholder="Name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -59,7 +56,7 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="userName" {...field} />
+                  <Input className="shad-input" placeholder="userName" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -72,7 +69,7 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Email" {...field} />
+                  <Input type="email" className="shad-input" placeholder="Your Email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -85,7 +82,7 @@ export default function SignUpForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input placeholder="Your Password" {...field} />
+                  <Input type="password" className="shad-input" placeholder="Your Password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

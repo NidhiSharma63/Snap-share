@@ -9,7 +9,7 @@ export const signUpFormSchema = z.object({
   username: z
     .string()
     .min(2, { message: "Username must be 2 character long" })
-    .max(10, { message: "Username should not be 10 character long" }),
+    .max(20, { message: "Username should not be 20 character long" }),
   email: z.string().email(),
   password: z
     .string()
