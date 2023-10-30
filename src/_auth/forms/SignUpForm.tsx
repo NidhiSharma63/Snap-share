@@ -7,12 +7,13 @@ import { useCreateUserAccount } from "@/lib/react-query/queryAndMutations";
 import { signUpFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as z from "zod";
 
 export default function SignUpForm() {
   const { toast } = useToast();
   const { isPending: isCreatingUser, mutateAsync: createUserAccount } = useCreateUserAccount();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -33,8 +34,7 @@ export default function SignUpForm() {
         title: "Sign up failed. Please try again.",
       });
     }
-
-    console.log(newAccount, "new user");
+    navigate("/");
   }
 
   return (
