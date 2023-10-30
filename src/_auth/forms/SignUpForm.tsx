@@ -3,7 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/shared/Loader";
 import { useToast } from "@/components/ui/use-toast";
-import { createUserAccount } from "@/lib/appwrite/api";
+import { useCreateUserAccount } from "@/lib/react-query/queryAndMutations";
 import { signUpFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,8 @@ import * as z from "zod";
 
 export default function SignUpForm() {
   const { toast } = useToast();
-  const isLoading = false;
+  const { isPending: isCreatingUser, mutateAsync: createUserAccount } = useCreateUserAccount();
+
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
     defaultValues: {
@@ -25,6 +26,7 @@ export default function SignUpForm() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
+    // const newAccount = await createUserAccount(values);
     const newAccount = await createUserAccount(values);
     if (!newAccount) {
       return toast({
@@ -41,7 +43,7 @@ export default function SignUpForm() {
         <img src="/assets/images/logo.svg" />
         <h2 className="h3-bold md:h2-bold pt-3 sm:pt-8">Create a new account</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2">
-          To use snapshare, Please enter you account details
+          To use snapgram, Please enter you account details
         </p>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-fill mt-4 ">
@@ -98,7 +100,7 @@ export default function SignUpForm() {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingUser ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading...
