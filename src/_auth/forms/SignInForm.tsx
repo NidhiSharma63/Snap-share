@@ -3,19 +3,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/shared/Loader";
 import { useToast } from "@/components/ui/use-toast";
-import { useCreateUserAccount } from "@/lib/react-query/queryAndMutations";
-import { signUpFormSchema } from "@/lib/validation/index";
+import { useAuthContext } from "@/context/AuthContext";
+import { useSignInAccount } from "@/lib/react-query/queryAndMutations";
+import { signInFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as z from "zod";
 
 export default function SignInForm() {
   const { toast } = useToast();
-  const { isPending: isCreatingUser, mutateAsync: createUserAccount } = useCreateUserAccount();
-
-  const form = useForm<z.infer<typeof signUpFormSchema>>({
-    resolver: zodResolver(signUpFormSchema),
+  const { checkAuthUser } = useAuthContext();
+  const navigate = useNavigate();
+  const { mutateAsync: signInAccount, isPending: isUserLoading } = useSignInAccount();
+  const form = useForm<z.infer<typeof signInFormSchema>>({
+    resolver: zodResolver(signInFormSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -23,25 +25,34 @@ export default function SignInForm() {
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
+  async function onSubmit(values: z.infer<typeof signInFormSchema>) {
     // const newAccount = await createUserAccount(values);
-    const newAccount = await createUserAccount(values);
-    if (!newAccount) {
-      return toast({
-        title: "Sign up failed. Please try again.",
-      });
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    });
+
+    if (!session) {
+      toast({ title: "Sign in failed. Please try again" });
     }
 
-    console.log(newAccount, "new user");
+    const isLoggedIn = await checkAuthUser();
+    console.log({ isLoggedIn });
+    if (isLoggedIn) {
+      form.reset();
+      navigate("/");
+    } else {
+      return;
+    }
   }
 
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col">
         <img src="/assets/images/logo.svg" />
-        <h2 className="h3-bold md:h2-bold pt-3 sm:pt-8">Create a new account</h2>
+        <h2 className="h3-bold md:h2-bold pt-3 sm:pt-8">Login to your Account</h2>
         <p className="text-light-3 small-medium md:base-regular mt-2">
-          To use snapgram, Please enter you account details
+          Welcome back, Please enter your account details
         </p>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-fill mt-4 ">
@@ -72,7 +83,7 @@ export default function SignInForm() {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser ? (
+            {isUserLoading ? (
               <div className="flex-center gap-2">
                 <Loader />
                 Loading...
@@ -82,9 +93,9 @@ export default function SignInForm() {
             )}
           </Button>
           <p className="text-small-regualr text-ligh-2 text-center mt-2">
-            Already have an Account ?
-            <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">
-              Log in
+            Don't have Account ?
+            <Link to="/sign-up" className="text-primary-500 text-small-semibold ml-1">
+              Sign up
             </Link>
           </p>
         </form>
