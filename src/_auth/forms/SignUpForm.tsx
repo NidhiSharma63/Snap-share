@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Loader from "@/components/ui/shared/Loader";
+import { createUserAccount } from "@/lib/appwrite/api";
 import { signUpFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,7 +26,8 @@ export default function SignUpForm() {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     console.log(values);
-    // const newUser = await createUserAccount(values)
+    const newUser = await createUserAccount(values);
+    console.log(newUser, "new user");
   }
   return (
     <Form {...form}>
