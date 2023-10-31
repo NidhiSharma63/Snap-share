@@ -1,27 +1,49 @@
+import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import FileUploader from "@/components/ui/shared/FileUploader";
 import { Textarea } from "@/components/ui/textarea";
-import { signUpFormSchema } from "@/lib/validation/index";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuthContext } from "@/context/AuthContext";
+import { useCreatePost } from "@/lib/react-query/queryAndMutations";
+import { postFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Models } from "appwrite";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as z from "zod";
-import { Button } from "../ui/button";
 
-export default function PostForm() {
-  const form = useForm<z.infer<typeof signUpFormSchema>>({
-    resolver: zodResolver(signUpFormSchema),
+type PostFormProps = {
+  post?: Models.Document;
+};
+
+export default function PostForm({ post }: PostFormProps) {
+  const { mutateAsync: createPost } = useCreatePost();
+  const navigate = useNavigate();
+  const { user } = useAuthContext();
+
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof postFormSchema>>({
+    resolver: zodResolver(postFormSchema),
     defaultValues: {
-      username: "",
-      name: "",
-      email: "",
-      password: "",
+      caption: post ? post.caption : "",
+      file: [],
+      location: post ? post.location : "",
+      tags: post ? post.tags.join(",") : "",
     },
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    // const newAccount = await createUserAccount(values);
+  async function onSubmit(values: z.infer<typeof postFormSchema>) {
+    console.log(values);
+    const newPost = await createPost({
+      ...values,
+      userId: user.id,
+    });
+    if (!newPost) {
+      toast({ title: "Please try again" });
+    }
+    navigate("/");
   }
   return (
     <Form {...form}>
@@ -46,7 +68,7 @@ export default function PostForm() {
             <FormItem>
               <FormLabel className="shad-form_label">Add Photos</FormLabel>
               <FormControl>
-                <FileUploader />
+                <FileUploader fieldChange={field.onChange} mediaUrl={post?.imageUrl} />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -59,7 +81,7 @@ export default function PostForm() {
             <FormItem>
               <FormLabel className="shad-form_label">Add Location</FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" />
+                <Input type="text" className="shad-input" {...field} />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -72,7 +94,7 @@ export default function PostForm() {
             <FormItem>
               <FormLabel className="shad-form_label">Add Tags (separated by comma " , ")</FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" placeholder="Art, Expression, Learn" />
+                <Input type="text" className="shad-input" placeholder="Art, Expression, Learn" {...field} />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
