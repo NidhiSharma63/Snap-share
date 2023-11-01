@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import FileUploader from "@/components/ui/shared/FileUploader";
+import Loader from "@/components/ui/shared/Loader";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuthContext } from "@/context/AuthContext";
-import { useCreatePost } from "@/lib/react-query/queryAndMutations";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queryAndMutations";
 import { postFormSchema } from "@/lib/validation/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Models } from "appwrite";
@@ -15,15 +16,18 @@ import * as z from "zod";
 
 type PostFormProps = {
   post?: Models.Document;
-  action: "Create |Update";
+  action: "Create" | "Update";
 };
 
 export default function PostForm({ post, action }: PostFormProps) {
-  const { mutateAsync: createPost } = useCreatePost();
+  const { mutateAsync: createPost, isPending: isUploadingPost } = useCreatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
+
   const navigate = useNavigate();
   const { user } = useAuthContext();
-  console.log({ post });
+
   const { toast } = useToast();
+
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
     defaultValues: {
@@ -37,6 +41,19 @@ export default function PostForm({ post, action }: PostFormProps) {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof postFormSchema>) {
     values;
+    if (post && action === "Update") {
+      const updatedPost = await updatePost({
+        ...values,
+        postId: post.$id,
+        imageUrl: post?.imageUrl,
+        imageId: post?.imageId,
+      });
+
+      if (!updatedPost) {
+        toast({ title: "Please try again" });
+      }
+      return navigate(`/posts/${post.$id}`);
+    }
     const newPost = await createPost({
       ...values,
       userId: user.id,
@@ -102,12 +119,19 @@ export default function PostForm({ post, action }: PostFormProps) {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-          <Button type="button" className="shad-button_dark_4">
+          <Button type="button" className="shad-button_dark_4" disabled={isLoadingUpdate | isUploadingPost}>
             Cancel
           </Button>
-          <Button type="submit" className="shad-button_primary whitespace-nowrap">
-            Upload
-          </Button>
+
+          {isLoadingUpdate ? (
+            <Button className="shad-button_primary whitespace-nowrap">
+              <Loader />
+            </Button>
+          ) : (
+            <Button type="submit" className="shad-button_primary whitespace-nowrap">
+              {action === "Update" ? "Update" : "Upload"}
+            </Button>
+          )}
         </div>
       </form>
     </Form>
