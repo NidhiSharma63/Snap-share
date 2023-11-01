@@ -119,7 +119,7 @@ export default function PostForm({ post, action }: PostFormProps) {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-          <Button type="button" className="shad-button_dark_4" disabled={isLoadingUpdate | isUploadingPost}>
+          <Button type="button" className="shad-button_dark_4" disabled={isLoadingUpdate || isUploadingPost}>
             Cancel
           </Button>
 
