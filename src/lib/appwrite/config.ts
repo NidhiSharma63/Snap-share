@@ -1,5 +1,5 @@
+// eslint-disable-next-line no-redeclare
 import { Account, Avatars, Client, Databases, Storage } from "appwrite";
-
 export const appwriteConfig = {
   url: import.meta.env.VITE_APPWRITE_URL,
   projectId: import.meta.env.VITE_APPWRITE_PROJECT_ID,
