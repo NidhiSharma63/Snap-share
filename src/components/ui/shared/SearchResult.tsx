@@ -1,15 +1,13 @@
 import GridPostList from "@/components/ui/shared/GridPostList";
 import Loader from "@/components/ui/shared/Loader";
-import { Models } from "appwrite";
 
 type SearchResultProps = {
   isSearchFetching: boolean;
-  searchedPosts: Models.Document[];
+  searchedPosts: any;
 };
 
 export default function SearchResult({ isSearchFetching, searchedPosts }: SearchResultProps) {
   if (isSearchFetching) return <Loader />;
-  console.log({ searchedPosts });
   if (searchedPosts && searchedPosts.documents.length > 0) {
     return <GridPostList posts={searchedPosts.documents} />;
   }
