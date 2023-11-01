@@ -13,7 +13,7 @@ export default function GridPostList({ posts, showUser = true, showStats = true 
   const { user } = useAuthContext();
   return (
     <ul className="grid-container">
-      {posts.map((post) => {
+      {posts?.map((post) => {
         return (
           <li key={post.$id} className="relative min-w-80 h-80">
             <Link to={`/posts/${post.$id}`} className="grid-post_link">
