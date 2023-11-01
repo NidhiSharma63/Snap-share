@@ -15,13 +15,14 @@ import * as z from "zod";
 
 type PostFormProps = {
   post?: Models.Document;
+  action: "Create |Update";
 };
 
-export default function PostForm({ post }: PostFormProps) {
+export default function PostForm({ post, action }: PostFormProps) {
   const { mutateAsync: createPost } = useCreatePost();
   const navigate = useNavigate();
   const { user } = useAuthContext();
-
+  console.log({ post });
   const { toast } = useToast();
   const form = useForm<z.infer<typeof postFormSchema>>({
     resolver: zodResolver(postFormSchema),
