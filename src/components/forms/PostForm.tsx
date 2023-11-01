@@ -123,7 +123,7 @@ export default function PostForm({ post, action }: PostFormProps) {
             Cancel
           </Button>
 
-          {isLoadingUpdate ? (
+          {isLoadingUpdate || isUploadingPost ? (
             <Button className="shad-button_primary whitespace-nowrap">
               <Loader />
             </Button>
