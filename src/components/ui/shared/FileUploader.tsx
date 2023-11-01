@@ -14,7 +14,7 @@ export default function FileUploader({ fieldChange, mediaUrl }: fileUploaderProp
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      console.log("first");
+      // console.log("first");
       setFile(acceptedFiles);
       fieldChange(acceptedFiles);
       setFileUrl(URL.createObjectURL(acceptedFiles[0]));
