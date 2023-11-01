@@ -14,12 +14,11 @@ export default function FileUploader({ fieldChange, mediaUrl }: fileUploaderProp
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      // console.log("first");
-      setFile(acceptedFiles);
+      // setFile(acceptedFiles);
       fieldChange(acceptedFiles);
       setFileUrl(URL.createObjectURL(acceptedFiles[0]));
     },
-    [file]
+    [fieldChange]
   );
 
   const { getRootProps, getInputProps } = useDropzone({

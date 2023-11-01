@@ -15,7 +15,7 @@ const PostDetails = () => {
   const { user } = useAuthContext();
 
   const { data: post, isLoading } = useGetPostById(id || "");
-  console.log(user.id === post?.creator.id, "user id : ", user.id, "post id", post?.creator.id);
+  // console.log(user.id === post?.creator.id, "user id : ", user.id, "post id", post?.creator.id);
   // const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(post?.creator.$id);
   const { mutate: deletePost } = useDeletePost();
 

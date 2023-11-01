@@ -15,7 +15,7 @@ export default function Explore() {
   const { data: searchedPost, isFetching: isSearchFetching } = useSearchPost(debounceValue);
   const shouldShowSearchResults = search !== "";
   const shouldShowPosts = !shouldShowSearchResults && posts?.pages.every((item) => item.documents.length === 0);
-  console.log({ posts });
+  // console.log({ posts });
 
   useEffect(() => {
     if (inView && !search) {
